@@ -177,6 +177,51 @@ if fig.is_rasterizable:
 More involved examples, for example for evaluation and training, can be found
 in the [examples](examples) folder.
 
+## API
+
+DeTi*k*Zify includes a lightweight HTTP service implemented with
+[FastAPI](https://fastapi.tiangolo.com/). It exposes an endpoint for image to
+Ti*k*Z conversion which can be launched directly from the command line:
+
+```bash
+python -m detikzify.api
+```
+
+The accompanying `Dockerfile` can be used to build a container image and run the
+service:
+
+```bash
+docker build -t detikzify-api .
+docker run -p 8000:8000 detikzify-api
+```
+
+### Endpoints
+
+| Method & Path | Description |
+| --- | --- |
+| `GET /` | Health check returning `{"status": "ok"}` |
+| `POST /generate` | Accepts an image upload parameter `file` and optional `preprocess` flag. Returns JSON containing the generated TikZ code. |
+
+#### `POST /generate`
+
+**Parameters**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `file` | file (required) | Image file to convert. PNG and JPEG are recommended. |
+| `preprocess` | boolean | Whether to apply built-in preprocessing. Defaults to `true`. |
+
+**Response**
+
+```json
+{
+  "code": "\\begin{tikzpicture} ... \\end{tikzpicture}"
+}
+```
+
+Set the `MODEL_NAME` environment variable before starting the server to load a
+different model.
+
 ## Model Weights & Datasets
 We upload all our DeTi*k*Zify models and datasets to the [Hugging Face
 Hub](https://huggingface.co/collections/nllg/detikzify-664460c521aa7c2880095a8b)

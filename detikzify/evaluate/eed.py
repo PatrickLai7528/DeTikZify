@@ -9,7 +9,11 @@ from torchmetrics.functional.text.eed import (
 from torchmetrics.functional.text.helper import _validate_inputs
 
 class TexEditDistance(ExtendedEditDistance):
-    """Adapt torchmetrics ExtendedEditDistance for TeX"""
+    """Adapt torchmetrics ExtendedEditDistance for TeX.
+
+    Supported languages: English (``"en"``), Japanese (``"ja"``) and
+    Traditional Chinese (``"zh"``).
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.lexer = TexLexer()
@@ -27,10 +31,12 @@ class TexEditDistance(ExtendedEditDistance):
                     if tokentype is Text:
                         if language == "en":
                             preprocess_function = _preprocess_en
-                        elif language == "ja":
+                        elif language in ("ja", "zh"):
                             preprocess_function = _preprocess_ja
                         else:
-                            raise ValueError(f"Expected argument `language` to either be `en` or `ja` but got {language}")
+                            raise ValueError(
+                                f"Expected argument `language` to be `en`, `ja`, or `zh` but got {language}"
+                            )
                         tokens.extend(preprocess_function(value).split())
                     elif not tokentype is Comment:
                         tokens.extend(value.split())
